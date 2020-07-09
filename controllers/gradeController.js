@@ -24,8 +24,12 @@ const findAll = async (req, res) => {
     : {};
 
   try {
-    const result = await gradeModel.find(condition);
-    res.json(result);
+    const grades = await gradeModel.find(condition).lean();
+    res.json(
+      grades.map((grade) => {
+        return { ...grade, id: grade._id };
+      })
+    );
     logger.info(`GET /grade`);
   } catch (error) {
     res
@@ -39,10 +43,10 @@ const findOne = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const grade = await gradeModel.findById(id);
+    const grade = await gradeModel.findById(id).lean();
     if (!grade) return res.status(404).res();
 
-    res.send(grade);
+    res.send({ ...grade, id: grade._id });
     logger.info(`GET /grade - ${id}`);
   } catch (error) {
     res.status(500).send({ message: 'Erro ao buscar o Grade id: ' + id });

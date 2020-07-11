@@ -24,12 +24,8 @@ const findAll = async (req, res) => {
     : {};
 
   try {
-    const grades = await gradeModel.find(condition).lean();
-    res.json(
-      grades.map((grade) => {
-        return { ...grade, id: grade._id };
-      })
-    );
+    const grades = await gradeModel.find(condition); //.lean();
+    res.json(grades);
     logger.info(`GET /grade`);
   } catch (error) {
     res
@@ -43,10 +39,10 @@ const findOne = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const grade = await gradeModel.findById(id).lean();
-    if (!grade) return res.status(404).res();
+    const grade = await gradeModel.findById(id); //.lean();
+    if (!grade) return res.status(404).send();
 
-    res.send({ ...grade, id: grade._id });
+    res.send(grade);
     logger.info(`GET /grade - ${id}`);
   } catch (error) {
     res.status(500).send({ message: 'Erro ao buscar o Grade id: ' + id });
@@ -92,7 +88,7 @@ const removeAll = async (req, res) => {
   const id = req.params.id;
 
   try {
-    await gradeModel.remove();
+    await gradeModel.deleteMany();
     res.send({
       message: `Grades excluidos`,
     });
